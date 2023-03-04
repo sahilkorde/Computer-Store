@@ -1,0 +1,53 @@
+﻿@page "/learnBlazor/Blazorjs"
+@inject IJSRuntime _JsRuntime
+<h3>BlazorJs</h3>
+
+<div class="row">
+    <button class="btn btn-secondary" @onclick="TestConfirmBox">Test Confirm Button</button>
+</div>
+<div class="row">
+    <button class="btn btn-success" @onclick="ToastrSuccess"> Toastr is success</button>
+    <button class="btn btn-danger" @onclick="ToastrFail"> Toastr is fail</button>
+</div>
+
+<div class="row">
+    <button class="btn btn-success" @onclick="SweatSuccess"> Toastr is success</button>
+    <button class="btn btn-danger" @onclick="SweatFail"> Toastr is fail</button>
+</div>
+
+@if (Confirmation)
+{
+    <text> comfirmation has been made !</text>
+}
+else
+{
+    <text>Confimation Pending !</text>
+}
+
+@code {
+    private string ConfirmMessage = "Are you sure you want to confirm it";
+    public bool Confirmation { get; set; }
+    private async Task TestConfirmBox()
+    {
+        Confirmation = await _JsRuntime.InvokeAsync<bool>("confirm", ConfirmMessage);
+    }
+
+    public async Task ToastrSuccess()
+    {
+        await _JsRuntime.ToastrSuccess("operation successfull");
+    }
+    public async Task ToastrFail()
+    {
+        await _JsRuntime.ToastrError("operation Fail");
+    }
+    public async Task SweatSuccess()
+    {
+        await _JsRuntime.InvokeVoidAsync("Sweatalert", "success title", "it is success", "success", "Cool");
+    }
+    public async Task SweatFail()
+    {
+        await _JsRuntime.InvokeVoidAsync("Sweatalert", "error title", "it is success", "error", "Cool");
+    }
+}
+
+

@@ -1,0 +1,91 @@
+﻿@page "/"
+@inject IProductService _productSerive
+
+@*<AuthorizeView>
+    <Authorized>
+        <p> Welcom, @context.User.Identity.Name</p>
+    </Authorized>
+    <NotAuthorized>
+        <p> Not Signed In</p>
+    </NotAuthorized>
+</AuthorizeView>*@
+
+
+@if (IsProcessing)
+{
+    <div class="text-center" style="height:100vh">
+        <img src="Images/ajax-loader.gif" />
+    </div>
+}
+else
+{
+    <div class="container-fluid mt-4">
+        <h1 class="text-dark mx-4 px-5">Products</h1>
+        <div class="row p-0">
+            <form class="col-md-2 ms-5 pt-4 border shadow-sm" style="height:80vh; border-radius:10px">
+                <input class="form-control shadow-sm" id="myInput" type="text" placeholder="Search..">
+                <hr>
+                <div class="border p-3 shadow-sm" style="border-radius: 10px">
+                    <h5 class="fw-bold">Category</h5>
+                    @foreach (var cat in Products.Select(u => u.Category.Name).Distinct())
+                    {
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            @cat
+                        </label> <br>
+                    }
+                </div>
+                <div class="my-4 p-3 border shadow-sm" style="border-radius: 10px">
+
+                    <h5>Price Range</h5>
+                    <div class=" row">
+                        <label for="Price" class="form-label col">0</label>
+                        <label for="Price" class="form-label col text-end">20000</label>
+                    </div>
+                    <input type="range" style="width:100%" min="1" max="100" value="50" id="Price">
+                </div>
+                <div class="my-4 p-3 text-end">
+                    <button class="btn btn-primary" value="Apply">Apply</button>
+                    <button class="btn btn-danger" value="Remove" disabled>Remove</button>
+                </div>
+            </form>
+            <div class="col-md-9 col" id="product">
+                @foreach (var prod in Products)
+                {
+                    <div class="row d-flex flex-sm-row flex-column mx-xl-1 mb-2 border bg-light " style="border-radius:10px">
+                        <div class="d-flex justify-content-center col-sm-3 p-2 m-3">
+                            <img class="img-fluid img-responsive shadow-sm" src="@prod.ImageUrl" style="max-height:22vh;  margin: auto;">
+                        </div>
+                        <div class="col-sm-7 mt-3 m-3  border-2 border-start border-dark">
+                            <h5 class="fw-bolder">@prod.Name</h5>
+                            <p class=" mb-0">@prod.MainFeature</p>
+                            <span class="badge text-dark p-0 m-0">Category : @prod.Category.Name</span><br>
+                            <span class="badge text-dark p-0">Toatal Varient : @prod.ProductPrices.Count()</span>
+                            <div class="text-warning p-0 ">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                            </div>
+                            <div class="flex-row d-flex mt-1">
+                                <h4 class="fw-bold col-6 pt-2">
+                                    <i class="bi bi-currency-rupee"></i>
+                                    @prod.ProductPrices.OrderBy(u=>u.Price).FirstOrDefault()?.Price /-
+                                </h4>
+                                <a class="btn btn-primary form-control p-2" href="/details/@prod.Id">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    public bool IsProcessing { get; set; } = false;
+    public IEnumerable<ProductDTO> Products { get; set; } = new List<ProductDTO>();
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        Products = await _productSerive.getAll();
+        IsProcessing = false;
+    }
+}

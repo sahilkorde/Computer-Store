@@ -1,0 +1,14 @@
+﻿<div class="row">
+    <h4 class="text-primary p-lg-4 pt-2 col-12"></h4>
+    <p class="text-secondary"> There is Message : @messageforgrandchild</p>
+    <p class="text-secondary">Luck Number : @LuckyNumberForGrandChild</p>
+</div>
+
+@code {
+    //[Parameter]
+    //public string message { get; set; }
+    [CascadingParameter (Name = "Message")]
+    public string messageforgrandchild { get; set; }
+    [CascadingParameter (Name = "Number")]
+    public int LuckyNumberForGrandChild { get; set; }
+}

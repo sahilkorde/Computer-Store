@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="Stripe.net" Version="41.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Computer_Store_Common\Computer_Store_Common.csproj" />
+    <ProjectReference Include="..\Computer_Store_DataAccess\Computer_Store_DataAccess.csproj" />
+    <ProjectReference Include="..\Computer_Store_Models\Computer_Store_Models.csproj" />
+  </ItemGroup>
+
+</Project>

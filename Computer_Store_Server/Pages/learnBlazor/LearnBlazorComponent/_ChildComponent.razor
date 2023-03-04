@@ -1,0 +1,25 @@
+﻿@using Computer_Store_Server.Pages.learnBlazor.LearnBlazorComponent
+<h3>_ChildComponent</h3>
+
+<div class="border-1 border-secondary">
+    <div class="alert alert-info"> @Title </div>
+    <div class="alert alert-success">
+        @if (ChildContent != null)
+        {
+            <span>@ChildContent</span>
+        }
+    </div>
+    <button @onclick="OnButtonClick" class="btn btn-danger">Button to clicked</button>
+    <_GrandChildComponent></_GrandChildComponent> 
+</div>
+@code {
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public EventCallback OnButtonClick { get; set; }
+    
+    //[Parameter]
+    //public string messageforgrandchild { get; set; }
+}

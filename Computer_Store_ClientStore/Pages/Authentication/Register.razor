@@ -1,0 +1,83 @@
+﻿@page "/register"
+
+<!-- Section: Design Block -->
+<section class="">
+    <!-- Jumbotron -->
+    <div class="px-4 py-5 px-md-5 text-center text-lg-start">
+        <div class="container">
+            <div class="row gx-lg-5 align-items-center">
+                <div class="d-flex col-lg-6 mb-5 mb-lg-0 p-0 text-white rounded-3" style="background-image: url(/Images/5052628.jpg); background-size: cover">
+                    <div class="bg-black bg-opacity-50 p-5 rounded">
+                        <h1 class="my-5 display-3 fw-bold ls-tight">
+                            The best offer <br />
+                            <span class="text-primary">The Online Computer Store</span>
+                        </h1>
+                        <hr />
+                        <p class="text-white fw-bolder bg-white bg-opacity-10 px-3">
+                            The company is heading to provide full range of PC components to all customers through its wide sales channels
+                            To provide customers superior quality and well-known brand products with best support & excellent after sale services are company’s motto.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="card bg-light shadow border border-4 border-secondary">
+                        <div class="card-body py-5 px-md-5">
+                            <EditForm Model="SignupRequest" OnValidSubmit="RegisterUser">
+                                <DataAnnotationsValidator/>
+                                <h3>Register</h3>
+
+                                @if (ShowRegistrationErrors)
+                                {
+                                    <div>
+                                        @foreach(var error in Errors)
+                                        {
+                                            <p class="text-danger text-center">@error</p>
+                                        }
+                                    </div>
+                                }
+
+                                <hr />
+                                <!-- 2 column grid layout with text inputs for the first and last names -->
+                                <div class="form-outline mb-4">
+                                    <InputText @bind-Value="SignupRequest.Name" class="form-control" placeholder="Enter a Name" />
+                                    <ValidationMessage For="(()=> SignupRequest.Name)"/>
+                                </div>
+                                <!-- Email input -->
+                                <div class="form-outline mb-4">
+                                    <InputText @bind-Value="SignupRequest.Email" class="form-control" placeholder="Enter Email Address" />
+                                    <ValidationMessage For="(()=> SignupRequest.Email)"/>
+                                </div>
+                                <div class="col-auto mb-4">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">+91</div>
+                                        </div>
+                                        <InputText @bind-Value="SignupRequest.PhoneNumber" class="form-control" placeholder="Enter Phone Number"/>
+                                    </div>
+                                    <ValidationMessage For="(()=> SignupRequest.PhoneNumber)" />
+                                </div>
+                                <!-- Password input -->
+                                <div class="form-outline mb-4">
+                                    <InputText @bind-Value="SignupRequest.Password" type="password" class="form-control" placeholder="Enter Password" />
+                                    <ValidationMessage For="(()=> SignupRequest.Password)" />
+                                </div>
+                                <div class="form-outline mb-4">
+                                    <InputText @bind-Value="SignupRequest.ConfirmPassword" type="password" class="form-control" placeholder="Enter confirm Password" />
+                                    <ValidationMessage For="(()=> SignupRequest.ConfirmPassword)"/>
+                                </div>
+
+                                <!-- Submit button -->
+                                <button type="submit" class="btn btn-primary btn-block mb-4">
+                                    Sign up
+                                </button>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Jumbotron -->
+</section>
+<!-- Section: Design Block -->

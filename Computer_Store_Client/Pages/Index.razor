@@ -1,0 +1,54 @@
+﻿@page "/"
+@inject IProductService _productSerive
+
+@if (IsProcessing)
+{
+    <div class="text-center">
+        <img src="Images/ajax-loader.gif" />
+    </div>
+}
+else{
+    <div class="container-fluid mt-4">
+        <h1 class="text-dark">Products</h1>
+        <div class="row p-0">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-9 col">
+            @foreach(var prod in Products){
+                <div class="row d-flex flex-sm-row flex-column mx-xl-1 mb-2 border rounded bg-light">
+                    <div class="d-flex justify-content-center col-sm-3 p-2 m-3">
+                            <img class="img-fluid img-responsive shadow-lg" src="@prod.ImageUrl" style="max-height:22vh;  margin: auto;">
+                    </div>
+                        <div class="col-sm-7 mt-3 m-3  border-2 border-start border-dark">
+                        <h5 class="fw-bolder">@prod.Name</h5>
+                        <p class=" mb-0">@prod.MainFeature</p>
+                        <span class="badge text-dark p-0 m-0">Category : @prod.Category.Name</span><br>
+                        <span class="badge text-dark p-0">Toatal Varient : @prod.ProductPrices.Count()</span>
+                        <div class="text-warning p-0 ">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                        </div>
+                        <div class="flex-row d-flex mt-1">
+                            <h4 class="fw-bold col-6 pt-2">
+                                    <i class="bi bi-currency-rupee"></i>
+                                    @prod.ProductPrices.Select(u => u.Price).Min()/-
+                            </h4>
+                            <a class="btn btn-primary form-control p-2" href="/details/@prod.Id">Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+}
+@code{
+    public bool IsProcessing { get; set; } = false;
+    public IEnumerable<ProductDTO> Products { get; set; } = new List<ProductDTO>();
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        Products = await _productSerive.getAll();
+        IsProcessing = false;
+    }
+}

@@ -1,0 +1,64 @@
+﻿@page "/LearnBlazor/DemoProduct"
+<h3>DempProduct</h3>
+Favorite Products : @SelectedFavoriteCount<br />
+Last Item Selected : @LastProduct<br />
+<div class="row">
+    @foreach(var prod in Products)
+    {
+        <_InduvisualProduct Product=@prod OnFavoriteUpdated="FavoriteCountUpdate" onSelected="itemSelectedUpdate">
+            <FirstFragment>#1</FirstFragment>
+            <SecondFragment>#2</SecondFragment>
+        </_InduvisualProduct>
+    }
+</div>
+
+@code {
+    List<Demo_Product> Products = new();
+    public int SelectedFavoriteCount { get; set; }
+    public string LastProduct { get; set; }
+    protected override void OnInitialized()
+    {
+        Products.Add(new()
+        {
+            Id = 1,
+            Name = "Product 1",
+            IsActive = true,
+            Price = 10.99,
+            ProductProps = new List<Demo_ProductProp>()
+            {
+                new Demo_ProductProp {Id=1, Key="Color", Value="Black"},
+                new Demo_ProductProp {Id=2, Key="Flavor", Value="Rose Jasmin"},
+                new Demo_ProductProp {Id=3, Key="Size", Value="20oz"},
+            }
+        });
+        Products.Add(new()
+        {
+            Id = 2,
+            Name = "Product 2",
+            IsActive = false,
+            Price = 109.5,
+            ProductProps = new List<Demo_ProductProp>()
+            {
+                new Demo_ProductProp {Id=1, Key="Color", Value="Voilet"},
+                new Demo_ProductProp {Id=2, Key="Flavor", Value="Chocolate"},
+                new Demo_ProductProp {Id=3, Key="Size", Value="35oz"},
+            }
+        });
+    }
+    protected void FavoriteCountUpdate(bool isSelected)
+    {
+        if(isSelected)
+        {
+            SelectedFavoriteCount++;
+        }
+        else
+        {
+            SelectedFavoriteCount--;
+        }
+    }
+
+    protected void itemSelectedUpdate(string name)
+    {
+        LastProduct = name;
+    }
+}

@@ -1,0 +1,106 @@
+﻿@page "/details/{ProductId:int}"
+@using Computer_Store_Client.Service.IService;
+@using Computer_Store_Client.ViewModel;
+@inject IProductService _productSerive
+@inject ICartService _cartSerive;
+@inject JSRuntime _jsRuntime;
+@if (IsProcessing)
+{
+    <div class="text-center">
+        <img src="/Images/ajax-loader.gif">
+    </div>
+}
+else{
+    <EditForm OnValidSubmit="AddToCart" Model="DetailsVM" class="m-5" method="post">
+        <DataAnnotationsValidator/>
+        <div class="row d-flex flex-md-row flex-column p-2 m-2">
+            <div class="d-flex border border-0 rounded-3 shadow border-secondary justify-content-center col-md-5 p-2 m-3">
+                <img class="img-fluid img-responsive shadow-lg" src="@Product.ImageUrl" style="max-height:35vh;  margin: auto; ">
+            </div>
+            <div class="col-md-6 mt-3 ps-5">
+                <h3>@Product.Name</h3>
+                <h4>@Product.MainFeature</h4>
+                <span class="badge bg-warning">@Product.Category.Name</span>
+                <hr />
+                <div class="d-flex row">
+                    @foreach(var varient in Product.ProductPrices)
+                    {
+                        if(varient.Id == DetailsVM.SelectedProductId)
+                        {
+                            //this product is selected by user
+                            <div class="col-2 bg-light text-center p-2 m-2 rounded-3 border border-success border-2 ">
+                                <p class="m-0 mb-1">@varient.Varient</p><hr class="m-0 p-0">
+                                <span><i class="bi bi-currency-rupee m-0"></i> @varient.Price.ToString()/-</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-2 bg-light text-center p-2 m-2 rounded-3 border" @onclick="(args) => SelectedProductPrice(args, varient.Id)">
+                                <p class="m-0 mb-1">@varient.Varient</p><hr class="m-0 p-0">
+                                <span><i class="bi bi-currency-rupee m-0"></i> @varient.Price.ToString()/-</span>
+                            </div>
+                        }
+                    }
+                </div>
+                <hr>
+                <div class="row d-flex flex-row ">
+                    <div class="d-flex col-6 ps-2">
+                        <div class="col-3 pt-2 me-3 text-end text-primary"><h6>Count : </h6></div>
+                        <div class="col-7 ps-0">
+                            <InputNumber @bind-Value="DetailsVM.Count" class="form-control"/>
+                            <ValidationMessage For="()=>DetailsVM.Count"></ValidationMessage>
+                        </div>
+                    </div>
+                    <div class="col-6 d-flex">
+                        @if(DetailsVM.SelectedProductId > 0)
+                        {
+                            <button class="btn btn-success shadow text-center fs-5" type="submit" value="Add to Cart"><i class="bi bi-cart-plus pe-3"></i>Add To Cart</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success shadow text-center fs-5" disabled><i class="bi bi-cart-plus pe-3"></i>Add To Cart</button>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="m-3 p-4 border-0 rounded-3 shadow-lg">
+            <p class="ps-5">@((MarkupString)Product.Description)</p>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int ProductId { get; set; }
+
+    public ProductDTO Product { get; set; } = new();
+    public bool IsProcessing { get; set; } = false;
+    public DetailsVM DetailsVM { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        Product = await _productSerive.get(ProductId);
+        IsProcessing = false;
+    }
+    private async Task SelectedProductPrice(MouseEventArgs e, int varientId)
+    {
+        DetailsVM.ProductPrice = Product.ProductPrices.FirstOrDefault(u => u.Id == varientId);
+        DetailsVM.SelectedProductId = varientId;
+    }
+    private async Task AddToCart()
+    {
+        ShoppingCart shoppingCart = new()
+            {
+                Count = DetailsVM.Count,
+                ProductId = ProductId,
+                ProductPriceId = DetailsVM.SelectedProductId
+            };
+
+        await _cartSerive.IcreamentCart(ShoppingCart);
+        await _jsRuntime.ToasterSuccess("Product added to cart");
+    }
+}
