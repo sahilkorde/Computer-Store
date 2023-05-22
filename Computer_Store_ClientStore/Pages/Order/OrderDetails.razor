@@ -1,0 +1,113 @@
+﻿@page "/order/details/{orderId:int}"
+
+@inject IOrderService _orderSerive
+
+<div class="container-fluid bg-light p-5"> 
+
+    @if (IsLoading)
+    {
+        <div class="text-center"> 
+            <img src="/Images/ajax-loader.gif">
+        </div>
+    }
+    else
+    {
+        <div class="container row bg-light">
+            <div class="col-8 shadow-lg px-5 border border-3 border-secondary rounded pt-5">
+                @foreach(var prod in Order.OrderDetails)
+                {
+                    <div class="row">
+                        <h5 class="text-primary col-5"><a class="text-decoration-none" href="/details/@prod.ProductId">@prod.ProductName</a></h5>
+                        <h6 class=" col-3">@prod.Count x <i class="bi bi-currency-rupee"></i>@prod.Price/-</h6>
+                        <h6 class=" col-3"><i class="bi bi-currency-rupee"></i>@(prod.Count * prod.Price)/-</h6>
+                    <hr />
+                    </div>
+                }
+            </div>
+            <div class="col-4">
+                <div class="bg-white p-3 border border-3 border-secondary rounded-3">
+                <h3 class="text-danger">#OrdId_@Order.OrderHeader.Id</h3>
+                <h6>Order Date : @Order.OrderHeader.OrderDate</h6>
+                @if (Order.OrderHeader.Status == SD.Status_Confirmed)
+                {
+
+                    <div class="col-3">
+                        <p class="badge text-start bg-info">confirmed</p>
+                    </div>
+                        @if (Order.OrderHeader.Carrier == null || Order.OrderHeader.Tracking == null)
+                        {
+                            <p>your order will be send out for delivery soon</p>
+                        }
+                        else
+                        {
+                            <p>your order is send out for delivery </p>
+                            <div class="row">
+                                <h5 class="col-4"> carrier : @Order.OrderHeader.Carrier</h5>
+                                <h5 class="col-8">TrackingId : @Order.OrderHeader.Tracking</h5>
+                            </div>
+                        }
+
+                    <p class="col-7">order date : @Order.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+
+                }
+                @if (Order.OrderHeader.Status == SD.Status_Pending)
+                {
+                    <div>
+                        <p class="badge text-start bg-warning">Pelase pay for your order</p>
+                    </div>
+                    <p class="col-7">order date : @Order.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+                }
+                @if (Order.OrderHeader.Status == SD.Status_Shipped)
+                {
+                    <div class="col-6">
+                        <p class="badge text-start bg-success">order is ready to shipped</p>
+                    </div>
+                    <p class="col-6">order date : @Order.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+                    Random rnd = new Random();
+                    <h6 class="">order expected till : @DateTime.Today.AddDays(rnd.Next(0,5)).AddHours(rnd.Next(0,5)).ToString("dd/MM/yy")</h6>
+                    <div class="row">
+                        <h6 class="col-4"> carrier : @Order.OrderHeader.Carrier</h6>
+                        <h6 class="col-8">TrackingId : @Order.OrderHeader.Tracking</h6>
+                    </div>
+                }
+                @if (Order.OrderHeader.Status == SD.Status_Cancelled)
+                {
+                    <di class="col-3" v>
+                        <p class="badge text-start bg-danger">cancelled</p>
+                    </di>
+                    <p class="col-7">order date : @Order.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+                }
+                @if (Order.OrderHeader.Status == SD.Status_Refunded)
+                {
+                    <div class="col-3">
+                        <p class="badge text-start bg-secondary">refunded</p>
+                    </div>
+                    <p class="col-7">order date : @Order.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+                }
+                    <h6 class="fw-bold col-8 m-0 p-2" style="border: 3px dashed">Order Total : <i class="bi bi-currency-rupee"></i>@Order.OrderHeader.OrderTotal /-</h6>
+                <hr/>
+                <h3>Shipping details</h3>
+                <h6>Address Type : @Order.OrderHeader.AddressType</h6>
+                <h6>Address : @Order.OrderHeader.StreetAddress</h6>
+                <h6>State : @Order.OrderHeader.State</h6>
+                <h6>city : @Order.OrderHeader.City</h6>
+                <h6>pincode : @Order.OrderHeader.PostalCode</h6>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+@code {
+    [Parameter]
+    public int orderId { get; set; } = 0;
+    public bool IsLoading { get; set; } = false;
+    public OrderDTO Order { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        Order = await _orderSerive.get(orderId);
+        IsLoading = false;
+    }
+}

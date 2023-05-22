@@ -106,9 +106,17 @@ namespace Computer_Store_Business.Repository
         public async Task<IEnumerable<OrderDTO>> getAll(string? userId = null, string? status = null)
         {
             List<Order> OrderFromdb = new List<Order>();
-            IEnumerable<OrderHeader> orderHeaderList = _db.OrderHeaders;
-            IEnumerable<OrderDetails> orderDetailList = _db.OrderDetails;
-            foreach(OrderHeader header in orderHeaderList)
+            IEnumerable<OrderHeader> orderHeaderList;
+            IEnumerable<OrderDetails> orderDetailList;
+            if (userId == null) { 
+                orderHeaderList = _db.OrderHeaders;
+            }
+            else
+            {
+                orderHeaderList = _db.OrderHeaders.Where(u => u.UserId == userId);
+            }
+            orderDetailList = _db.OrderDetails;
+            foreach (OrderHeader header in orderHeaderList)
             {
                 Order order = new()
                 {
@@ -152,7 +160,6 @@ namespace Computer_Store_Business.Repository
                 orderHeaderFromDb.State = objDTO.State;
                 orderHeaderFromDb.PostalCode= objDTO.PostalCode;
                 orderHeaderFromDb.Status= objDTO.Status;
-                
                 
                 await _db.SaveChangesAsync();
                 return _mapper.Map<OrderHeader, OrderHeaderDTO>(orderHeaderFromDb);

@@ -20,12 +20,17 @@ namespace Computer_Store_API.Controllers
             _emailSender = email;
         }
         [HttpGet]
-        public async Task<IActionResult> getAll()
+        [ActionName("getAll")]
+        public async Task<IActionResult> getAll(string? userid)
         {
-            return Ok(await _orderRepository.getAll());
+            if(userid== null) { 
+                return Ok(await _orderRepository.getAll());
+            }
+            return Ok(await _orderRepository.getAll(userid));
         }
 
         [HttpGet("{OrderHeaderId}")]
+        [ActionName("get")]
         public async Task<IActionResult> get(int? OrderheaderId)
         {
             if(OrderheaderId == null || OrderheaderId == 0)

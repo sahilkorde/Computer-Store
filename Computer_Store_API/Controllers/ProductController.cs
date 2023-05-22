@@ -16,9 +16,13 @@ namespace Computer_Store_API.Controllers
             _productRepository = productRepository;
         }
         [HttpGet]
-        public async Task<IActionResult> getAll()
+        public async Task<IActionResult> getAll(string? search=null, string? catid=null, int? minprice=null, int? maxprice=null)
         {
-            return Ok(await _productRepository.getAll());
+            List<int> catIds = new List<int>();
+            if(catid != null) { 
+                catIds = catid.Split(',').Select(int.Parse).ToList();
+            }
+            return Ok(await _productRepository.getAll(search, catIds, minprice, maxprice));
         }
 
         [HttpGet("{productId}")]

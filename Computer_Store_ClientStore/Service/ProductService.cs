@@ -33,9 +33,14 @@ namespace Computer_Store_ClientStore.Service
             }
         }
 
-        public async Task<IEnumerable<ProductDTO>> getAll()
+        public async Task<IEnumerable<ProductDTO>> getAll(string? search, List<int>? catid, int? minprice, int? maxprice)
         {
-            var response = await _httpClient.GetAsync("/api/product");
+            string catlist = null;
+            if(catid != null) { 
+                catlist = string.Join(",", catid);
+            }
+
+            var response = await _httpClient.GetAsync($"/api/product?search={ search}&catid={ catlist}&minprice={ minprice}&maxprice={ maxprice}");
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();

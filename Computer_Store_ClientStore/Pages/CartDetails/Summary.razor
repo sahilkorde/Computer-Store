@@ -22,14 +22,14 @@ else
                     <div class="card-header border-top border-start border-end border-bottom-0 border-2 py-3">
                         <h5 class="mb-0">Cart - @order.OrderDetails.Count items</h5>
                     </div>
-                    <div class="m-0 p-0" style="box-shadow: 5px 5px 25px #2359">
+                    <div class="m-0 p-0 border-top border-5">
                     @foreach (var orderitem in order.OrderDetails)
                     {
-                        <div class="card-body border-0 border-start border-end border-2">
+                        <div class="card-body border-0 border-start bg-white border-end border-2">
                             <!-- Single item -->
                             <div class="row">
-                                <div class="col-lg-3 col-md-12 mb-lg-0 text-center">
-                                    <img class="img-fluid img-responsive shadow-lg" src="@orderitem.Product.ImageUrl" style="max-height:15vh;  margin: auto;">
+                                <div class="col-lg-3 col-md-12 mb-lg-0 text-center bg-white border-end  border-5 rounded-3">
+                                    <img class="img-fluid img-responsive" src="@orderitem.Product.ImageUrl" style="max-height:15vh;  margin: auto;">
                                 </div>
 
                                 <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">

@@ -2,6 +2,7 @@
 @using Computer_Store_Common;
 @inject IOrderRepository _orderRepository
 @inject IJSRuntime _jsRuntime
+@attribute [Authorize(Roles = SD.Role_admin)]
 
 @if(IsLoading)
 {

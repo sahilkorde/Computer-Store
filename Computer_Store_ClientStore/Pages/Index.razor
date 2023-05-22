@@ -22,16 +22,16 @@ else
     <div class="container-fluid mt-4">
         <h1 class="text-dark mx-4 px-5">Products</h1>
         <div class="row p-0">
-            <form class="col-md-2 ms-5 pt-4 border shadow-sm" style="height:80vh; border-radius:10px">
-                <input class="form-control shadow-sm" id="myInput" type="text" placeholder="Search..">
+            <form class="col-md-2 ms-5 pt-4 border-secondary border-3 border-end" style="height:80vh;" @onsubmit="@Applyfilter">
+                <input class="form-control shadow-sm" @bind-value="Search" id="myInput" type="text" placeholder="Search..">
                 <hr>
                 <div class="border p-3 shadow-sm" style="border-radius: 10px">
                     <h5 class="fw-bold">Category</h5>
-                    @foreach (var cat in Products.Select(u => u.Category.Name).Distinct())
+                    @foreach (var cat in Products.Select(u => new { u.Category.Name, u.CategoryId }).Distinct())
                     {
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <input class="form-check-input" type="checkbox" value="@cat.CategoryId" @onchange="EventArgs => {checkboxClicked(cat.CategoryId, EventArgs.Value);}" id="flexCheckDefault">
                         <label class="form-check-label" for="flexCheckDefault">
-                            @cat
+                            @cat.Name
                         </label> <br>
                     }
                 </div>
@@ -45,7 +45,7 @@ else
                     <input type="range" style="width:100%" min="1" max="100" value="50" id="Price">
                 </div>
                 <div class="my-4 p-3 text-end">
-                    <button class="btn btn-primary" value="Apply">Apply</button>
+                    <button class="btn btn-primary" type="submit" value="Apply">Apply</button>
                     <button class="btn btn-danger" value="Remove" disabled>Remove</button>
                 </div>
             </form>
@@ -53,17 +53,14 @@ else
                 @foreach (var prod in Products)
                 {
                     <div class="row d-flex flex-sm-row flex-column mx-xl-1 mb-2 border bg-light " style="border-radius:10px">
-                        <div class="d-flex justify-content-center col-sm-3 p-2 m-3">
-                            <img class="img-fluid img-responsive shadow-sm" src="@prod.ImageUrl" style="max-height:22vh;  margin: auto;">
+                        <div class="d-flex justify-content-center col-sm-3 p-2 m-3 bg-white shadow-sm rounded-3 border">
+                            <img class="img-fluid img-responsive" src="@prod.ImageUrl" style="max-height:22vh;  margin: auto;">
                         </div>
                         <div class="col-sm-7 mt-3 m-3  border-2 border-start border-dark">
                             <h5 class="fw-bolder">@prod.Name</h5>
                             <p class=" mb-0">@prod.MainFeature</p>
                             <span class="badge text-dark p-0 m-0">Category : @prod.Category.Name</span><br>
                             <span class="badge text-dark p-0">Toatal Varient : @prod.ProductPrices.Count()</span>
-                            <div class="text-warning p-0 ">
-                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
-                            </div>
                             <div class="flex-row d-flex mt-1">
                                 <h4 class="fw-bold col-6 pt-2">
                                     <i class="bi bi-currency-rupee"></i>
@@ -82,10 +79,32 @@ else
 @code {
     public bool IsProcessing { get; set; } = false;
     public IEnumerable<ProductDTO> Products { get; set; } = new List<ProductDTO>();
+    public List<int> selectedcatIds { get; set; } = new List<int>();
+    public string Search { get; set; }
+    public int catId { get; set; }
+    public int minPirce { get; set; }
+    public int maxPrice { get; set; }
     protected override async Task OnInitializedAsync()
     {
         IsProcessing = true;
         Products = await _productSerive.getAll();
         IsProcessing = false;
+    }
+    private void checkboxClicked(int catid, object Checked){
+        if ((bool)Checked){
+            selectedcatIds.Add(catid);
+        }
+        else
+        {
+            selectedcatIds.Remove(catid);
+        }
+    }
+    private async Task Applyfilter()
+    {
+        IsProcessing = true;
+        Products = await _productSerive.getAll(Search, selectedcatIds, minPirce, maxPrice);
+        selectedcatIds = new List<int>();
+        IsProcessing = false;
+
     }
 }

@@ -1,0 +1,109 @@
+﻿@page "/orders"
+@inject IOrderService _orderService
+@inject ILocalStorageService _localStorageService
+
+@if (IsProcessing)
+{
+    <div class="text-center">
+        <img src="/Images/loader.gif">
+    </div>
+}
+else
+{
+    <div style="background-image: url(/Images/7031541.jpg); background-size: cover">
+        <div class="container col-6 mt-3">
+            @if (orders.Any())
+            {
+                @foreach (var ord in orders.Reverse())
+                {
+                    <div class="bg-light row p-5 border border-2 border-dark shadow-lg rounded-3 mb-1">
+                        <div class="col-10">
+                            <div class="row">
+                                <div class="fs-4 col-4">
+                                    <i class="bi bi-currency-rupee"></i>@ord.OrderHeader.OrderTotal /-
+                                </div>
+                                <div class="col-6">
+                                    <h5 class=" text-center"> No of items : @ord.OrderDetails.Count()</h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col row">
+                                    @if (ord.OrderHeader.Status == SD.Status_Confirmed)
+                                    {
+
+                                        <div class="col-3">
+                                            <p class="badge text-start bg-info">confirmed</p>
+                                        </div>
+                                        @if(ord.OrderHeader.Carrier == null || ord.OrderHeader.Tracking == null)
+                                        {
+                                            <p>your order will be send out for delivery soon</p>
+                                        }
+                                        else{
+                                            <p>your order is send out for delivery </p>
+                                            <div class="row">
+                                                <h5 class="col-4"> carrier : @ord.OrderHeader.Carrier</h5>
+                                                <h5 class="col-8">TrackingId : @ord.OrderHeader.Tracking</h5>
+                                            </div>
+                                        }
+                                        <p class="col-7">order date : @ord.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+
+                                    }
+                                    @if (ord.OrderHeader.Status == SD.Status_Pending)
+                                    {
+                                        <div>
+                                            <p class="badge text-start bg-warning">Pelase pay for your order</p>
+                                        </div>
+                                        <p class="col-7">order date : @ord.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+                                    }
+                                    @if (ord.OrderHeader.Status == SD.Status_Shipped)
+                                    {
+                                        <div class="col-6">
+                                            <p class="badge text-start bg-success">shipped</p>
+                                        </div>
+                                        <p class="col-6">order date : @ord.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+                                        Random rnd = new Random();
+                                        <h5 class="">order shipped at : @DateTime.Today.ToString("dd/MM/yy")</h5>
+                                    }
+                                    @if (ord.OrderHeader.Status == SD.Status_Cancelled)
+                                    {
+                                        <di class="col-3"v>
+                                            <p class="badge text-start bg-danger">cancelled</p>
+                                        </di>
+                                        <p class="col-7">order date : @ord.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+                                    }
+                                    @if(ord.OrderHeader.Status == SD.Status_Refunded)
+                                    {
+                                        <div class="col-3">
+                                            <p class="badge text-start bg-secondary">refunded</p>
+                                        </div>
+                                        <p class="col-7">order date : @ord.OrderHeader.OrderDate.ToString("dd/MM/yy")</p>
+                                    }
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="col-2">
+                            <a class="btn btn-primary" href="/order/details/@ord.OrderHeader.Id"> View</a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+
+            }
+        </div>
+    </div>
+}
+@code {
+    public bool IsProcessing { get; set; } = false;
+    public IEnumerable<OrderDTO> orders { get; set; } = new List<OrderDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        var userInfo = await _localStorageService.GetItemAsync<UserDTO>(SD.Local_UserDetails);
+        orders = await _orderService.getAll(userInfo.Id);
+        IsProcessing = false;
+    }
+}

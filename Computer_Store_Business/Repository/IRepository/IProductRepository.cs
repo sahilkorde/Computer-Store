@@ -13,7 +13,7 @@ namespace Computer_Store_Business.Repository.IRepository
         public Task<ProductDTO> update(ProductDTO product);
         public Task<int> delete(int id);
         public Task<ProductDTO> get(int id);
-        public Task<IEnumerable<ProductDTO>> getAll();
+        public Task<IEnumerable<ProductDTO>> getAll(string? search = null, List<int>? catid =null, int? minprice = null , int? maxprice = null);
 
     }
 }

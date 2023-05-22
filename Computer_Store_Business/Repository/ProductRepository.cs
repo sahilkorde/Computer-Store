@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Computer_Store_DataAccess;
 using Computer_Store_DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Computer_Store_Business.Repository
 {
@@ -50,9 +51,43 @@ namespace Computer_Store_Business.Repository
             return new ProductDTO();
         }
 
-        public async Task<IEnumerable<ProductDTO>> getAll()
+        public async Task<IEnumerable<ProductDTO>> getAll(string? search, List<int>? catid, int? minprice, int? maxprice)
         {
-            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(_db.Products.Include(u => u.Category).Include(u=>u.ProductPrices));
+            IQueryable<Product> product = _db.Products.Include(p => p.Category).Include(p => p.ProductPrices);
+            
+            if (!string.IsNullOrEmpty(search))
+            {
+                //List<string> searchlist = search.Split(' ').ToList();
+                product = product.Where(p => p.Name.Contains(search) || p.Description.Contains(search) || p.MainFeature.Contains(search) || p.Category.Name.Contains(search));
+            }
+            if (minprice.HasValue && minprice>0)
+            {
+                product = product.Where(p => p.ProductPrices.Any(pp => pp.Price >= minprice.Value));
+            }
+
+            if (maxprice.HasValue & maxprice >0)
+            {
+                product = product.Where(p => p.ProductPrices.Any(pp => pp.Price <= maxprice.Value));
+            }
+            if (catid != null && catid.Count > 0)
+            {
+                product = product.Where(p => catid.Contains(p.CategoryId));
+            }
+            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(product);
+            /*if (search == null && catid == null) {
+                return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(_db.Products.Include(u => u.Category).Include(u=>u.ProductPrices));
+            }
+            else
+            {
+                if(search == null) {
+                    return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(_db.Products.Where(u => u.CategoryId == catid).Include(u => u.Category).Include(u => u.ProductPrices));
+                }
+                if(catid == null)
+                {
+                    return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(_db.Products.Where(u => u.Name.Contains(search) || u.MainFeature.Contains(search)).Include(u => u.Category).Include(u => u.ProductPrices));
+                }
+                return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(_db.Products.Where(u => (u.Name.Contains(search) || u.MainFeature.Contains(search)) & (u.CategoryId == catid)).Include(u => u.Category).Include(u => u.ProductPrices));
+            }*/
         }
 
         public async Task<ProductDTO> update(ProductDTO objDTO)

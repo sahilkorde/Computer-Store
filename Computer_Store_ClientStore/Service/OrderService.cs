@@ -33,7 +33,7 @@ namespace Computer_Store_ClientStore.Service
 
         public async Task<OrderDTO> get(int orderId)
         {
-            var response = await _httpClient.GetAsync($"/api/order/{orderId}");
+            var response = await _httpClient.GetAsync($"/api/order/get/{orderId}");
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
@@ -47,9 +47,9 @@ namespace Computer_Store_ClientStore.Service
             }
         }
 
-        public async Task<IEnumerable<OrderDTO>> getAll(string? userId=null)
+        public async Task<IEnumerable<OrderDTO>> getAll(string? userId)
         {
-            var response = await _httpClient.GetAsync("/api/order");
+            var response = await _httpClient.GetAsync($"/api/order/getAll?userid={userId}");
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();

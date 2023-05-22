@@ -10,7 +10,7 @@ namespace Computer_Store_API.Helper
         {
             try { 
             var emailToSend = new MimeMessage();
-            emailToSend.From.Add(MailboxAddress.Parse("chanel.waelchi@ethereal.email"));
+            emailToSend.From.Add(MailboxAddress.Parse("felipa.tremblay27@ethereal.email"));
             emailToSend.To.Add(MailboxAddress.Parse(email));
             emailToSend.Subject = subject;
             emailToSend.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -21,7 +21,7 @@ namespace Computer_Store_API.Helper
             //send email
             using var emailClient = new SmtpClient();
             emailClient.Connect("smtp.ethereal.email", 587, MailKit.Security.SecureSocketOptions.StartTls);
-            emailClient.Authenticate("chanel.waelchi@ethereal.email", "XWhgk4NuBBqHhnsnHd");
+            emailClient.Authenticate("felipa.tremblay27@ethereal.email", "fzY3J7JjRBJBWwtuCe");
             emailClient.Send(emailToSend);
             emailClient.Disconnect(true);
             }
